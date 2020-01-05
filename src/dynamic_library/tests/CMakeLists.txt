@@ -1,0 +1,4 @@
+add_executable(dynamic_library_tests math_function_test.cpp)
+target_link_libraries(dynamic_library_tests dynamic_library Catch2)
+
+add_test(dynamic_library_unit_tests dynamic_library_tests)

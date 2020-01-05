@@ -1,0 +1,2 @@
+add_subdirectory(dynamic_library)
+add_subdirectory(executable)
