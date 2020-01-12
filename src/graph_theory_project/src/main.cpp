@@ -1,9 +1,7 @@
-#include <graph/math_function.h>
 #include <iostream>
 
 int main() {
-    Math math;
 
-    std::cout << math.add(5, 7) << std::endl;
+    std::cout << 5 << std::endl;
     return 0;
 }
