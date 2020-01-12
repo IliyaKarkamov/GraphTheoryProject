@@ -1,2 +1,1 @@
-add_subdirectory(dynamic_library)
-add_subdirectory(executable)
+add_subdirectory(graph_theory_project)

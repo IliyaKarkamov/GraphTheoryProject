@@ -9,7 +9,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-option(BUILD_SHARED_LIBRARIES "Build shared libraries" ON)
 option(BUILD_TESTS "Build the test programs" ON)
 option(GENERATE_INSTALL "Generate installation target" ON)
 

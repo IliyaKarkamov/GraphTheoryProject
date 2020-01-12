@@ -1,8 +1,8 @@
-project(executable)
+project(graph_theory_project)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-target_link_libraries(${PROJECT_NAME} dynamic_library)
+#target_link_libraries(${PROJECT_NAME} graph)
 
 if (GENERATE_INSTALL)
     install(TARGETS ${PROJECT_NAME}

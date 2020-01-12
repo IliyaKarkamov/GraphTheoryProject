@@ -1,4 +1,4 @@
-#include <dynamic_library/math_function.h>
+#include <graph/math_function.h>
 #include <iostream>
 
 int main() {
