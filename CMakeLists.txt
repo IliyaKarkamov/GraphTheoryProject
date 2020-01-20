@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(cmake_base_project)
+project(graph_theory_project)
 
 set(CMAKE_CXX_STANDARD 17)
 
