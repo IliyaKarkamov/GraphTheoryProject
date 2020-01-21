@@ -1,1 +1,2 @@
+add_subdirectory(graph)
 add_subdirectory(graph_theory_project)
