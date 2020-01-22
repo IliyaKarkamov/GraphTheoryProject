@@ -16,8 +16,8 @@ class AdjacencyList
 public:
     explicit AdjacencyList(size_t vertexCount) noexcept;
 
-    VertexDescriptor addVertex(TVertexData&& vertexData, size_t edgeCount);
-    EdgeDescriptor addEdge(VertexDescriptor src, VertexDescriptor dest, TEdgeData&& edgeData);
+    VertexDescriptor addVertex(TVertexData vertexData, size_t edgeCount);
+    EdgeDescriptor addEdge(VertexDescriptor src, VertexDescriptor dest, TEdgeData edgeData);
 
     TVertexData& getVertex(VertexDescriptor vertex);
     const TVertexData& getVertex(VertexDescriptor vertex) const;
@@ -32,10 +32,9 @@ private:
     struct Edge
     {
         TEdgeData edgeData;
-        VertexDescriptor vertex{};
+        VertexDescriptor vertex;
 
-        Edge() = default;
-        Edge(TEdgeData&& edgeData, VertexDescriptor vertex) : edgeData(std::move(edgeData)), vertex(vertex) {}
+        Edge(TEdgeData edgeData, VertexDescriptor vertex) : edgeData(std::move(edgeData)), vertex(vertex) {}
     };
 
     struct Vertex
@@ -43,8 +42,7 @@ private:
         TVertexData vertexData;
         std::vector<Edge> edges;
 
-        Vertex(TVertexData&& vertexData, std::vector<Edge>&& edges) : vertexData(std::move(vertexData)), edges(std::move(edges))
-        {}
+        Vertex(TVertexData vertexData, std::vector<Edge> edges) : vertexData(std::move(vertexData)), edges(std::move(edges)) {}
     };
 
     std::vector<Vertex> m_vertices;
@@ -57,7 +55,7 @@ AdjacencyList<TVertexData, TEdgeData>::AdjacencyList(size_t vertexCount) noexcep
 }
 
 template<typename TVertexData, typename TEdgeData>
-VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData&& vertexData, size_t edgeCount)
+VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData vertexData, size_t edgeCount)
 {
     auto&& vertex = m_vertices.emplace_back(std::move(vertexData), std::vector<Edge>());
     vertex.edges.reserve(edgeCount);
@@ -66,12 +64,12 @@ VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData&& 
 }
 
 template<typename TVertexData, typename TEdgeData>
-EdgeDescriptor AdjacencyList<TVertexData, TEdgeData>::addEdge(VertexDescriptor src, VertexDescriptor dest, TEdgeData&& edgeData)
+EdgeDescriptor AdjacencyList<TVertexData, TEdgeData>::addEdge(VertexDescriptor src, VertexDescriptor dest, TEdgeData edgeData)
 {
     assert(src >= 0 && src < m_vertices.size());
     assert(dest >= 0 && dest < m_vertices.size());
 
-    m_vertices[src].edges.emplace_back(std::forward<TEdgeData>(edgeData), dest);
+    m_vertices[src].edges.emplace_back(edgeData, dest);
     m_vertices[dest].edges.emplace_back(std::move(edgeData), src);
 
     return m_vertices[src].edges.size() - 1;
