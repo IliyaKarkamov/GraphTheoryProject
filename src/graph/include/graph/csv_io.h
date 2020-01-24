@@ -35,7 +35,7 @@ std::istream& operator>>(std::istream& is, AdjacencyList<TVertexData, TEdgeData>
     graph.reserve(size);
 
     for (auto&& fieldIt = rowIt->begin() + 1; fieldIt != rowIt->end(); ++fieldIt)
-        graph.addVertex(detail::lexical_cast<TVertexData>(*fieldIt), (size * (size - 1)) / 2);
+        graph.addVertex(detail::lexical_cast<TVertexData>(*fieldIt), size);
 
     ++rowIt;
 
