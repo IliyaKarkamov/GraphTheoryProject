@@ -1,0 +1,3 @@
+[submodule "deps/csv-parser/csv-parser"]
+	path = deps/csv-parser/csv-parser
+	url = ../../AriaFallah/csv-parser
