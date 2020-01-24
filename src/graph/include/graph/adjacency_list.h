@@ -14,9 +14,15 @@ template<typename TVertexData, typename TEdgeData>
 class AdjacencyList
 {
 public:
+    explicit AdjacencyList() noexcept = default;
     explicit AdjacencyList(size_t vertexCount) noexcept;
 
+    void reserve(size_t vertexCount);
+    void reserve(VertexDescriptor vertex, size_t edgeCount);
+
+    VertexDescriptor addVertex(TVertexData vertexData);
     VertexDescriptor addVertex(TVertexData vertexData, size_t edgeCount);
+
     EdgeDescriptor addEdge(VertexDescriptor src, VertexDescriptor dest, TEdgeData edgeData);
 
     TVertexData& getVertex(VertexDescriptor vertex);
@@ -55,11 +61,31 @@ AdjacencyList<TVertexData, TEdgeData>::AdjacencyList(size_t vertexCount) noexcep
 }
 
 template<typename TVertexData, typename TEdgeData>
+void AdjacencyList<TVertexData, TEdgeData>::reserve(size_t vertexCount)
+{
+    m_vertices.reserve(vertexCount);
+}
+
+template<typename TVertexData, typename TEdgeData>
+void AdjacencyList<TVertexData, TEdgeData>::reserve(VertexDescriptor vertex, size_t edgeCount)
+{
+    assert(vertex >= 0 && vertex < m_vertices.size());
+    m_vertices[vertex].reserve(edgeCount);
+}
+
+template<typename TVertexData, typename TEdgeData>
 VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData vertexData, size_t edgeCount)
 {
     auto&& vertex = m_vertices.emplace_back(std::move(vertexData), std::vector<Edge>());
     vertex.edges.reserve(edgeCount);
 
+    return m_vertices.size() - 1;
+}
+
+template<typename TVertexData, typename TEdgeData>
+VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData vertexData)
+{
+    m_vertices.emplace_back(std::move(vertexData), std::vector<Edge>());
     return m_vertices.size() - 1;
 }
 
