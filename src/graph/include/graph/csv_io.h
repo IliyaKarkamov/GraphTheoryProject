@@ -40,16 +40,16 @@ std::istream& operator>>(std::istream& is, AdjacencyList<TVertexData, TEdgeData>
 
     ++rowIt;
 
-    for (auto i = 0; rowIt != parser.end(); ++rowIt, ++i)
+    for (auto i = 0u; rowIt != parser.end(); ++rowIt, ++i)
     {
         auto&& row = *rowIt;
         auto j = i + 1;
 
-        for (auto&& fieldIt = row.begin() + i + 2; fieldIt != row.end(); ++fieldIt, ++j)
+        for (auto&& fieldIt = row.begin() + i + 2u; fieldIt != row.end(); ++fieldIt, ++j)
         {
             const auto weight = detail::lexical_cast<TEdgeData>(*fieldIt);
 
-            if (weight < 0.0001)
+            if (weight < 0.0001f)
                 continue;
 
             graph.addEdge(i, j, weight);
