@@ -21,6 +21,9 @@ public:
     void reserve(size_t vertexCount);
     void reserve(VertexDescriptor vertex, size_t edgeCount);
 
+    [[nodiscard]] size_t size() const noexcept;
+    [[nodiscard]] size_t size(VertexDescriptor vertex) const noexcept;
+
     VertexDescriptor addVertex(TVertexData vertexData);
     VertexDescriptor addVertex(TVertexData vertexData, size_t edgeCount);
 
@@ -35,8 +38,7 @@ public:
     std::pair<VertexDescriptor, TEdgeData> getEdgeById(VertexDescriptor vertex, EdgeDescriptor edge) const;
     std::pair<VertexDescriptor, TEdgeData> getEdgeById(VertexDescriptor vertex, EdgeDescriptor edge);
 
-    [[nodiscard]] size_t size() const noexcept;
-    [[nodiscard]] size_t size(VertexDescriptor vertex) const noexcept;
+    std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> getEdges() const;
 
     template<typename UnaryPredicate>
     void sortEdges(VertexDescriptor vertex, UnaryPredicate p);
@@ -81,6 +83,19 @@ void AdjacencyList<TVertexData, TEdgeData>::reserve(VertexDescriptor vertex, siz
 {
     assert(vertex >= 0 && vertex < m_vertices.size());
     m_vertices[vertex].reserve(edgeCount);
+}
+
+template<typename TVertexData, typename TEdgeData>
+size_t AdjacencyList<TVertexData, TEdgeData>::size() const noexcept
+{
+    return m_vertices.size();
+}
+
+template<typename TVertexData, typename TEdgeData>
+size_t AdjacencyList<TVertexData, TEdgeData>::size(VertexDescriptor vertex) const noexcept
+{
+    assert(vertex >= 0 && vertex < m_vertices.size());
+    return m_vertices[vertex].edges.size();
 }
 
 template<typename TVertexData, typename TEdgeData>
@@ -170,16 +185,21 @@ std::pair<VertexDescriptor, TEdgeData> AdjacencyList<TVertexData, TEdgeData>::ge
 }
 
 template<typename TVertexData, typename TEdgeData>
-size_t AdjacencyList<TVertexData, TEdgeData>::size() const noexcept
+std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> AdjacencyList<TVertexData, TEdgeData>::getEdges()
+    const
 {
-    return m_vertices.size();
-}
+    std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> allEdges;
+    allEdges.reserve(m_vertices.size() * m_vertices.size());
 
-template<typename TVertexData, typename TEdgeData>
-size_t AdjacencyList<TVertexData, TEdgeData>::size(VertexDescriptor vertex) const noexcept
-{
-    assert(vertex >= 0 && vertex < m_vertices.size());
-    return m_vertices[vertex].edges.size();
+    for (auto i = 0u; i < m_vertices.size(); ++i)
+    {
+        const auto& edges = m_vertices[i].edges;
+
+        for (auto j = 0u; j < edges.size(); ++j)
+            allEdges.emplace_back(std::make_pair(i, j), edges[j].edgeData);
+    }
+
+    return std::move(allEdges);
 }
 
 template<typename TVertexData, typename TEdgeData>

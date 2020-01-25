@@ -1,7 +1,4 @@
-#include <graph/adjacency_list.h>
-#include <graph/csv_io.h>
-#include <graph/xml_io.h>
-#include <graph/algorithms.h>
+#include <graph/graph.h>
 #include <iostream>
 #include <chrono>
 #include <cmath>
@@ -26,23 +23,33 @@ AdjacencyList<std::string, float> processData(const std::string& inputFile, cons
     return std::move(graph);
 }
 
+void processGraph(AdjacencyList<std::string, float>& graph, const std::string& outputFile)
+{
+    kruskalSpanningTree(graph, [](const auto& lhs, const auto& rhs) { return lhs.second > rhs.second; });
+
+    std::ofstream ofs(outputFile);
+    ofs << graph;
+    ofs.close();
+}
+
 int main()
 {
     const auto begin = std::chrono::high_resolution_clock::now();
 
     auto future = std::async(std::launch::async, []() {
         auto graph = processData("mtx_correl_log_ret.csv", "log_returns_with_max_weight.gexf");
-        //
+        processGraph(graph, "log_returns_maximum_spanning_tree.gexf");
     });
 
     auto graph = processData("mtx_correl_ewm_vol.csv", "vol_with_max_weight.gexf");
+    processGraph(graph, "vol_maximum_spanning_tree.gexf");
 
     future.get();
 
     const auto end = std::chrono::high_resolution_clock::now();
-    const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+    const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 
-    std::cout << microseconds.count() << " microseconds" << std::endl;
+    std::cout << milliseconds.count() << " milliseconds" << std::endl;
 
     return 0;
 }
