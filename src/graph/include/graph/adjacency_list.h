@@ -38,6 +38,12 @@ public:
     [[nodiscard]] size_t size() const noexcept;
     [[nodiscard]] size_t size(VertexDescriptor vertex) const noexcept;
 
+    template<typename UnaryPredicate>
+    void sortEdges(VertexDescriptor vertex, UnaryPredicate p);
+
+    void clear();
+    void clearEdges();
+
 private:
     struct Edge
     {
@@ -174,6 +180,30 @@ size_t AdjacencyList<TVertexData, TEdgeData>::size(VertexDescriptor vertex) cons
 {
     assert(vertex >= 0 && vertex < m_vertices.size());
     return m_vertices[vertex].edges.size();
+}
+
+template<typename TVertexData, typename TEdgeData>
+template<typename UnaryPredicate>
+void AdjacencyList<TVertexData, TEdgeData>::sortEdges(VertexDescriptor vertex, UnaryPredicate p)
+{
+    assert(vertex >= 0 && vertex < m_vertices.size());
+
+    auto& edges = m_vertices[vertex].edges;
+
+    std::sort(
+        std::begin(edges), std::end(edges), [&p](const Edge& lhs, const Edge& rhs) { return p(lhs.edgeData, rhs.edgeData); });
+}
+
+template<typename TVertexData, typename TEdgeData>
+void AdjacencyList<TVertexData, TEdgeData>::clear()
+{
+    m_vertices.clear();
+}
+
+template<typename TVertexData, typename TEdgeData>
+void AdjacencyList<TVertexData, TEdgeData>::clearEdges()
+{
+    std::for_each(std::begin(m_vertices), std::end(m_vertices), [](Vertex& vertex) { vertex.edges.clear(); });
 }
 
 }  // namespace graph
