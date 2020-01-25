@@ -27,7 +27,7 @@ TEST_CASE("simple")
     REQUIRE(graph.size(googleDescriptor) == 1);
     REQUIRE(graph.size(ibmDescriptor) == 1);
 
-    REQUIRE(std::fabs(graph.getEdge(googleDescriptor, googleIbmEdge) - 5.f) < 0.0001);
+    REQUIRE(std::fabs(graph.getEdgeById(googleDescriptor, googleIbmEdge).second - 5.f) < 0.0001);
 
     const auto microsoftDescriptor = graph.addVertex("Microsoft"s, 2);
 

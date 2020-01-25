@@ -1,6 +1,7 @@
 #ifndef GRAPH_THEORY_PROJECT_CSV_IO_H
 #define GRAPH_THEORY_PROJECT_CSV_IO_H
 
+#include <graph/adjacency_list.h>
 #include <csv-parser/parser.hpp>
 #include <istream>
 #include <sstream>
