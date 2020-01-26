@@ -36,9 +36,9 @@ public:
     const TEdgeData& getEdge(VertexDescriptor src, VertexDescriptor dest) const;
 
     std::pair<VertexDescriptor, TEdgeData> getEdgeById(VertexDescriptor vertex, EdgeDescriptor edge) const;
-    std::pair<VertexDescriptor, TEdgeData> getEdgeById(VertexDescriptor vertex, EdgeDescriptor edge);
 
     std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> getEdges() const;
+    std::vector<std::pair<VertexDescriptor, TEdgeData>> getEdges(VertexDescriptor vertex) const;
 
     template<typename UnaryPredicate>
     void sortEdges(VertexDescriptor vertex, UnaryPredicate p);
@@ -146,12 +146,12 @@ TEdgeData& AdjacencyList<TVertexData, TEdgeData>::getEdge(VertexDescriptor src, 
     assert(src >= 0 && src < m_vertices.size());
     assert(dest >= 0 && dest < m_vertices.size());
 
-    const auto& edges = m_vertices[src].edges;
+    auto& edges = m_vertices[src].edges;
     const auto it = std::find_if(std::begin(edges), std::end(edges), [dest](const Edge& edge) { return edge.vertex == dest; });
 
     assert(it != edges.end());
 
-    return *it;
+    return (*it).edgeData;
 }
 
 template<typename TVertexData, typename TEdgeData>
@@ -165,19 +165,7 @@ const TEdgeData& AdjacencyList<TVertexData, TEdgeData>::getEdge(VertexDescriptor
 
     assert(it != edges.end());
 
-    return *it;
-}
-
-template<typename TVertexData, typename TEdgeData>
-std::pair<VertexDescriptor, TEdgeData> AdjacencyList<TVertexData, TEdgeData>::getEdgeById(VertexDescriptor vertex,
-                                                                                          EdgeDescriptor edge)
-{
-    assert(vertex >= 0 && vertex < m_vertices.size());
-    assert(edge >= 0 && edge < m_vertices[vertex].edges.size());
-
-    const auto& e = m_vertices[vertex].edges[edge];
-
-    return std::make_pair(e.vertex, e.edgeData);
+    return (*it).edgeData;
 }
 
 template<typename TVertexData, typename TEdgeData>
@@ -208,6 +196,22 @@ std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>>
     }
 
     return std::move(allEdges);
+}
+
+template<typename TVertexData, typename TEdgeData>
+std::vector<std::pair<VertexDescriptor, TEdgeData>> AdjacencyList<TVertexData, TEdgeData>::getEdges(VertexDescriptor vertex) const
+{
+    assert(vertex >= 0 && vertex < m_vertices.size());
+
+    const auto& edges = m_vertices[vertex].edges;
+
+    std::vector<std::pair<VertexDescriptor, TEdgeData>> resultEdges;
+    resultEdges.reserve(edges.size());
+
+    std::for_each(
+        std::begin(edges), std::end(edges), [&resultEdges](const auto& e) { resultEdges.emplace_back(e.vertex, e.edgeData); });
+
+    return std::move(resultEdges);
 }
 
 template<typename TVertexData, typename TEdgeData>

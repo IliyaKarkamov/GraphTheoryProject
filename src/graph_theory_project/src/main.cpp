@@ -14,7 +14,7 @@ AdjacencyList<std::string, float> processData(const std::string& inputFile, cons
     ifs >> graph;
     ifs.close();
 
-    removeEdgesKeepNIf(graph, 3, [](float lhs, float rhs) { return std::fabs(lhs) > std::fabs(rhs); });
+    sieveEdgesIf(graph, 3, [](float lhs, float rhs) { return std::fabs(lhs) > std::fabs(rhs); });
 
     std::ofstream ofs(outputFile);
     ofs << graph;

@@ -3,14 +3,26 @@
 
 #include <graph/adjacency_list.h>
 #include <graph/disjoint_set.h>
+#include <vector>
+#include <cmath>
 
 namespace graph
 {
 template<typename TVertexData, typename TEdgeData, typename UnaryPredicate>
-void removeEdgesKeepNIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t keep, UnaryPredicate p)
+void sieveEdgesIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t keep, UnaryPredicate p)
 {
-    std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> whiteList;
+    struct WhiteListComparator
+    {
+        VertexDescriptor v1, v2;
+        TEdgeData w;
+        WhiteListComparator(VertexDescriptor v1, VertexDescriptor v2, TEdgeData w) : v1(v1), v2(v2), w(std::move(w)) {}
+        bool operator()(const std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>& edge)
+        {
+            return (edge.first.first + edge.first.second == v1 + v2) && (std::fabs(edge.second - w) < 0.0001f);
+        }
+    };
 
+    std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> whiteList;
     whiteList.reserve(graph.size() * keep);
 
     for (auto i = 0u; i < graph.size(); ++i)
@@ -21,8 +33,10 @@ void removeEdgesKeepNIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t kee
 
         for (auto j = 0u; j < (keep > edges ? edges : keep); ++j)
         {
-            auto&& edge = graph.getEdgeById(i, j);
-            whiteList.emplace_back(std::make_pair(i, edge.first), std::move(edge.second));
+            auto&& [v, w] = graph.getEdgeById(i, j);
+
+            if (std::find_if(std::begin(whiteList), std::end(whiteList), WhiteListComparator(i, v, w)) == whiteList.end())
+                whiteList.emplace_back(std::make_pair(i, v), std::move(w));
         }
     }
 
