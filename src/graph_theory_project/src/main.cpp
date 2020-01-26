@@ -20,7 +20,7 @@ AdjacencyList<std::string, float> processData(const std::string& inputFile, cons
     ofs << graph;
     ofs.close();
 
-    return std::move(graph);
+    return graph;
 }
 
 void processGraph(AdjacencyList<std::string, float>& graph, const std::string& outputFile)
@@ -34,23 +34,30 @@ void processGraph(AdjacencyList<std::string, float>& graph, const std::string& o
 
 int main()
 {
-    const auto begin = std::chrono::high_resolution_clock::now();
+    try
+    {
+        const auto begin = std::chrono::high_resolution_clock::now();
 
-    auto future = std::async(std::launch::async, []() {
-        auto graph = processData("mtx_correl_log_ret.csv", "log_returns_with_max_weight.gexf");
-        processGraph(graph, "log_returns_maximum_spanning_tree.gexf");
-    });
+        auto future = std::async(std::launch::async, []() {
+            auto graph = processData("mtx_correl_log_ret.csv", "log_returns_with_max_weight.gexf");
+            processGraph(graph, "log_returns_maximum_spanning_tree.gexf");
+        });
 
-    auto graph = processData("mtx_correl_ewm_vol.csv", "vol_with_max_weight.gexf");
-    processGraph(graph, "vol_maximum_spanning_tree.gexf");
+        auto graph = processData("mtx_correl_ewm_vol.csv", "vol_with_max_weight.gexf");
+        processGraph(graph, "vol_maximum_spanning_tree.gexf");
 
-    future.get();
+        future.get();
 
-    const auto end = std::chrono::high_resolution_clock::now();
-    const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+        const auto end = std::chrono::high_resolution_clock::now();
+        const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 
-    std::cout << milliseconds.count() << " milliseconds" << std::endl;
-    std::cin.get();
+        std::cout << milliseconds.count() << " milliseconds" << std::endl;
+        std::cin.get();
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Exception: " << e.what();
+    }
 
     return 0;
 }
