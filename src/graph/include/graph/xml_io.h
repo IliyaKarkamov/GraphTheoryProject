@@ -39,27 +39,35 @@ std::ostream& operator<<(std::ostream& os, const AdjacencyList<TVertexData, TEdg
         nodesElement->InsertEndChild(nodeElement);
 
         nodeElement->SetAttribute("id", i);
-        nodeElement->SetAttribute("label", graph.getVertex(i).c_str()); // todo this may not be std::string!
+        nodeElement->SetAttribute("label", graph.getVertex(i).c_str());  // todo this may not be std::string!
     }
 
     auto edgesElement = doc.NewElement("edges");
     graphElement->InsertEndChild(edgesElement);
 
-    auto id = 0;
+    auto id = 0u;
 
-    for (auto i = 0; i < graph.size(); ++i)
+    std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> exported;
+    exported.reserve(graph.sizeOfEdges());
+
+    for (auto i = 0u; i < graph.size(); ++i)
     {
-        for (auto j = 0; j < graph.size(i); ++j)
+        for (auto j = 0u; j < graph.size(i); ++j)
         {
+            auto&& [v, w] = graph.getEdgeById(i, j);
+
+            if (std::find_if(std::begin(exported), std::end(exported), EdgeComparator(i, v, w)) != std::end(exported))
+                continue;
+
+            exported.emplace_back(std::make_pair(i, v), w);
+
             auto edgeElement = doc.NewElement("edge");
             edgesElement->InsertEndChild(edgeElement);
 
-            auto&& edge = graph.getEdgeById(i, j);
-
             const auto strId = std::to_string(id++);
             const auto strSource = std::to_string(i);
-            const auto strTarget = std::to_string(edge.first);
-            const auto strWeight = std::to_string(edge.second);
+            const auto strTarget = std::to_string(v);
+            const auto strWeight = std::to_string(w);
 
             edgeElement->SetAttribute("id", strId.c_str());
             edgeElement->SetAttribute("source", strSource.c_str());

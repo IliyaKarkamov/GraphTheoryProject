@@ -5,6 +5,7 @@
 #include <utility>
 #include <cassert>
 #include <algorithm>
+#include <cmath>
 
 namespace graph
 {
@@ -23,6 +24,7 @@ public:
 
     [[nodiscard]] size_t size() const noexcept;
     [[nodiscard]] size_t size(VertexDescriptor vertex) const noexcept;
+    [[nodiscard]] size_t sizeOfEdges() const noexcept;
 
     VertexDescriptor addVertex(TVertexData vertexData);
     VertexDescriptor addVertex(TVertexData vertexData, size_t edgeCount);
@@ -96,6 +98,17 @@ size_t AdjacencyList<TVertexData, TEdgeData>::size(VertexDescriptor vertex) cons
 {
     assert(vertex >= 0 && vertex < m_vertices.size());
     return m_vertices[vertex].edges.size();
+}
+
+template<typename TVertexData, typename TEdgeData>
+size_t AdjacencyList<TVertexData, TEdgeData>::sizeOfEdges() const noexcept
+{
+    size_t size = 0u;
+
+    for (auto&& vertex : m_vertices)
+        size += vertex.edges.size();
+
+    return size;
 }
 
 template<typename TVertexData, typename TEdgeData>
@@ -237,6 +250,21 @@ void AdjacencyList<TVertexData, TEdgeData>::clearEdges()
 {
     std::for_each(std::begin(m_vertices), std::end(m_vertices), [](Vertex& vertex) { vertex.edges.clear(); });
 }
+
+template<typename TEdgeData>
+class EdgeComparator
+{
+    VertexDescriptor v1, v2;
+    TEdgeData w;
+
+public:
+    EdgeComparator(VertexDescriptor v1, VertexDescriptor v2, TEdgeData w) : v1(v1), v2(v2), w(std::move(w)) {}
+
+    bool operator()(const std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>& edge)
+    {
+        return (edge.first.first + edge.first.second == v1 + v2) && (std::fabs(edge.second - w) < 0.0001f);
+    }
+};
 
 }  // namespace graph
 

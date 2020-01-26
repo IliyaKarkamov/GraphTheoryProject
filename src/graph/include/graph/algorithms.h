@@ -11,17 +11,6 @@ namespace graph
 template<typename TVertexData, typename TEdgeData, typename UnaryPredicate>
 void sieveEdgesIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t keep, UnaryPredicate p)
 {
-    struct WhiteListComparator
-    {
-        VertexDescriptor v1, v2;
-        TEdgeData w;
-        WhiteListComparator(VertexDescriptor v1, VertexDescriptor v2, TEdgeData w) : v1(v1), v2(v2), w(std::move(w)) {}
-        bool operator()(const std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>& edge)
-        {
-            return (edge.first.first + edge.first.second == v1 + v2) && (std::fabs(edge.second - w) < 0.0001f);
-        }
-    };
-
     std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>> whiteList;
     whiteList.reserve(graph.size() * keep);
 
@@ -35,7 +24,7 @@ void sieveEdgesIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t keep, Una
         {
             auto&& [v, w] = graph.getEdgeById(i, j);
 
-            if (std::find_if(std::begin(whiteList), std::end(whiteList), WhiteListComparator(i, v, w)) == whiteList.end())
+            if (std::find_if(std::begin(whiteList), std::end(whiteList), EdgeComparator(i, v, w)) == whiteList.end())
                 whiteList.emplace_back(std::make_pair(i, v), std::move(w));
         }
     }
