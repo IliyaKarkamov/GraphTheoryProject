@@ -29,7 +29,7 @@ std::istream& operator>>(std::istream& is, AdjacencyList<TVertexData, TEdgeData>
 
     CsvParser parser(is);
 
-    auto&& rowIt = parser.begin();
+    auto rowIt = parser.begin();
 
     const auto size = rowIt->size() - 1;
 
@@ -42,7 +42,7 @@ std::istream& operator>>(std::istream& is, AdjacencyList<TVertexData, TEdgeData>
 
     for (auto i = 0u; rowIt != parser.end(); ++rowIt, ++i)
     {
-        auto&& row = *rowIt;
+        auto& row = *rowIt;
         auto j = i + 1;
 
         for (auto&& fieldIt = row.begin() + i + 2u; fieldIt != row.end(); ++fieldIt, ++j)

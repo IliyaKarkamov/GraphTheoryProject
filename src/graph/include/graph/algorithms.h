@@ -28,8 +28,8 @@ void removeEdgesKeepNIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t kee
 
     graph.clearEdges();
 
-    for (auto&& edge : whiteList)
-        graph.addEdge(edge.first.first, edge.first.second, std::move(edge.second));
+    for (auto&& [v, w] : whiteList)
+        graph.addEdge(v.first, v.second, std::move(w));
 }
 
 template<typename TVertexData, typename TEdgeData, typename UnaryPredicate>
@@ -56,7 +56,7 @@ void kruskalSpanningTree(AdjacencyList<TVertexData, TEdgeData>& graph, UnaryPred
 
         if (x != y)
         {
-            spanningTree.emplace_back(v, w);
+            spanningTree.emplace_back(v, std::move(w));
             disjointSet.merge(x, y);
         }
     }

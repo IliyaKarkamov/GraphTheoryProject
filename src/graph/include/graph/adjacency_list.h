@@ -101,7 +101,7 @@ size_t AdjacencyList<TVertexData, TEdgeData>::size(VertexDescriptor vertex) cons
 template<typename TVertexData, typename TEdgeData>
 VertexDescriptor AdjacencyList<TVertexData, TEdgeData>::addVertex(TVertexData vertexData, size_t edgeCount)
 {
-    auto&& vertex = m_vertices.emplace_back(std::move(vertexData), std::vector<Edge>());
+    auto& vertex = m_vertices.emplace_back(std::move(vertexData), std::vector<Edge>());
     vertex.edges.reserve(edgeCount);
 
     return m_vertices.size() - 1;
@@ -147,7 +147,11 @@ TEdgeData& AdjacencyList<TVertexData, TEdgeData>::getEdge(VertexDescriptor src, 
     assert(dest >= 0 && dest < m_vertices.size());
 
     const auto& edges = m_vertices[src].edges;
-    return std::find_if(std::begin(edges), std::end(edges), [dest](const Edge& edge) { return edge.vertex == dest; });
+    const auto it = std::find_if(std::begin(edges), std::end(edges), [dest](const Edge& edge) { return edge.vertex == dest; });
+
+    assert(it != edges.end());
+
+    return *it;
 }
 
 template<typename TVertexData, typename TEdgeData>
@@ -157,12 +161,16 @@ const TEdgeData& AdjacencyList<TVertexData, TEdgeData>::getEdge(VertexDescriptor
     assert(dest >= 0 && dest < m_vertices.size());
 
     const auto& edges = m_vertices[src].edges;
-    return std::find_if(std::begin(edges), std::end(edges), [dest](const Edge& edge) { return edge.vertex == dest; });
+    const auto it = std::find_if(std::cbegin(edges), std::cend(edges), [dest](const Edge& edge) { return edge.vertex == dest; });
+
+    assert(it != edges.end());
+
+    return *it;
 }
 
 template<typename TVertexData, typename TEdgeData>
 std::pair<VertexDescriptor, TEdgeData> AdjacencyList<TVertexData, TEdgeData>::getEdgeById(VertexDescriptor vertex,
-                                                                                           EdgeDescriptor edge)
+                                                                                          EdgeDescriptor edge)
 {
     assert(vertex >= 0 && vertex < m_vertices.size());
     assert(edge >= 0 && edge < m_vertices[vertex].edges.size());
@@ -174,7 +182,7 @@ std::pair<VertexDescriptor, TEdgeData> AdjacencyList<TVertexData, TEdgeData>::ge
 
 template<typename TVertexData, typename TEdgeData>
 std::pair<VertexDescriptor, TEdgeData> AdjacencyList<TVertexData, TEdgeData>::getEdgeById(VertexDescriptor vertex,
-                                                                                                 EdgeDescriptor edge) const
+                                                                                          EdgeDescriptor edge) const
 {
     assert(vertex >= 0 && vertex < m_vertices.size());
     assert(edge >= 0 && edge < m_vertices[vertex].edges.size());
