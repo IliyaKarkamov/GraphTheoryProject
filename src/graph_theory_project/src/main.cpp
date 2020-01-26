@@ -50,6 +50,7 @@ int main()
     const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 
     std::cout << milliseconds.count() << " milliseconds" << std::endl;
+    std::cin.get();
 
     return 0;
 }

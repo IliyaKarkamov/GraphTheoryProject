@@ -196,7 +196,7 @@ std::vector<std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>>
         const auto& edges = m_vertices[i].edges;
 
         for (auto j = 0u; j < edges.size(); ++j)
-            allEdges.emplace_back(std::make_pair(i, j), edges[j].edgeData);
+            allEdges.emplace_back(std::make_pair(i, edges[j].vertex), edges[j].edgeData);
     }
 
     return std::move(allEdges);
