@@ -3,6 +3,14 @@ project(graph_theory_project)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+else ()
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
+endif ()
+
+
 set(DEPS_DIR "${PROJECT_SOURCE_DIR}/deps")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
