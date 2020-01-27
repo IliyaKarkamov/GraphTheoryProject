@@ -24,7 +24,7 @@ void sieveEdgesIf(AdjacencyList<TVertexData, TEdgeData>& graph, size_t keep, Una
         {
             auto&& [v, w] = graph.getEdgeById(i, j);
 
-            if (std::find_if(std::begin(whiteList), std::end(whiteList), EdgeComparator(i, v, w)) == whiteList.end())
+            if (std::find_if(std::begin(whiteList), std::end(whiteList), EdgeComparator<TEdgeData>(i, v)) == std::end(whiteList))
                 whiteList.emplace_back(std::make_pair(i, v), std::move(w));
         }
     }

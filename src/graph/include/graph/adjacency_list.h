@@ -5,7 +5,6 @@
 #include <utility>
 #include <cassert>
 #include <algorithm>
-#include <cmath>
 
 namespace graph
 {
@@ -255,14 +254,18 @@ template<typename TEdgeData>
 class EdgeComparator
 {
     VertexDescriptor v1, v2;
-    TEdgeData w;
 
 public:
-    EdgeComparator(VertexDescriptor v1, VertexDescriptor v2, TEdgeData w) : v1(v1), v2(v2), w(std::move(w)) {}
+    EdgeComparator(VertexDescriptor v1, VertexDescriptor v2) : v1(v1), v2(v2) {}
 
     bool operator()(const std::pair<std::pair<VertexDescriptor, VertexDescriptor>, TEdgeData>& edge)
     {
-        return (edge.first.first + edge.first.second == v1 + v2) && (std::fabs(edge.second - w) < 0.0001f);
+        auto&& [v0, w0] = edge;
+
+        if (v0.first == v1 && v0.second == v2)
+            return true;
+
+        return v0.first == v2 && v0.second == v1;
     }
 };
 

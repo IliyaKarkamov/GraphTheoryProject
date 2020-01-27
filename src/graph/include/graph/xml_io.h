@@ -56,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, const AdjacencyList<TVertexData, TEdg
         {
             auto&& [v, w] = graph.getEdgeById(i, j);
 
-            if (std::find_if(std::begin(exported), std::end(exported), EdgeComparator(i, v, w)) != std::end(exported))
+            if (std::find_if(std::begin(exported), std::end(exported), EdgeComparator<TEdgeData>(i, v)) != std::end(exported))
                 continue;
 
             exported.emplace_back(std::make_pair(i, v), w);
